@@ -483,6 +483,19 @@ footer p{color:var(--muted);font-size:0.75rem}
 
 
 </style>
+<style>
+.chat-dropdown{position:relative;display:inline-block}
+.chat-menu{
+display:none;position:absolute;top:115%;right:0;width:360px;
+background:#ffffff;border:2px solid #e5e7eb;border-radius:20px;
+padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.22);z-index:99999
+}
+.chat-menu.show{display:block}
+.chat-item{display:block;text-decoration:none;color:#111;padding:12px 8px;border-radius:10px}
+.chat-item:hover{background:#f5f7fb}
+.chat-title{font-weight:700;text-align:center;margin-bottom:16px}
+.chat-sub{color:#444;margin-top:4px}
+</style>
 </head>
 <body>
 
@@ -2917,28 +2930,33 @@ a:has(.result-card-photo) {
   <div style="max-width:520px;margin:2rem auto 0;background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.25);border-radius:14px;padding:1.4rem 1.6rem;text-align:left">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.8rem">
       <span style="font-size:1.3rem">✅</span>
-      <span style="font-family:'Exo 2',sans-serif;font-weight:800;font-size:1rem;color:#00E5A0">Payment ke baad kya hoga?</span>
+      <span style="font-family:'Exo 2',sans-serif;font-weight:800;font-size:1rem;color:#00E5A0">What happens after payment?</span>
     </div>
     <p style="color:#C0D0F0;font-size:0.88rem;line-height:1.75;margin:0">
-      Payment complete hone ke <strong style="color:#fff">15 minute ke andar</strong> aapko TradingView access de diya jayega. Baki koi bhi problem nahi hogi — lekin agar koi problem aaye to hume turant contact karein:
+      Within <strong style="color:#fff">15 minutes</strong> of completing your payment, you'll be given TradingView access. There won't be any other issues — but if a problem does come up, please contact us right away:
     </p>
-    <a href="mailto:algovisionx2@gmail.com" style="display:inline-flex;align-items:center;gap:6px;margin-top:0.9rem;color:#00D4FF;font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.85rem;text-decoration:none">
-      📧 algovisionx2@gmail.com
-    </a>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:0.9rem">
+      <a href="https://wa.me/919027789516" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:#00D4FF;font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.85rem;text-decoration:none">
+        💬 +91 90277 89516
+      </a>
+      <a href="mailto:algochiefsupport@gmail.com" style="display:inline-flex;align-items:center;gap:6px;color:#00D4FF;font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.85rem;text-decoration:none">
+        📧 algochiefsupport@gmail.com
+      </a>
+    </div>
   </div>
 
   <div style="margin:1.8rem auto;text-align:center">
     <a href="#pricing" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'});return false;" style="display:inline-block;background:linear-gradient(90deg,#1E8FFF,#00D4FF);color:#fff;padding:1rem 2.8rem;border-radius:12px;font-family:'Exo 2',sans-serif;font-weight:800;font-size:1.05rem;text-decoration:none;box-shadow:0 0 32px rgba(30,143,255,0.45);letter-spacing:0.02em;transition:all 0.2s">⚡ Pay &amp; Get Access Now →</a>
     <p style="color:#5A6A99;font-size:0.78rem;margin-top:1rem">🔒 Secure payment via Razorpay · Access within 15 minutes</p>
   </div>
-  <p class="spots">Only <strong>7 spots left</strong> this month · After payment email <strong style="color:var(--cyan)">algovisionx2@gmail.com</strong> with your TradingView username</p>
+  <p class="spots">Only <strong>7 spots left</strong> this month · After payment email <strong style="color:var(--cyan)">algochiefsupport@gmail.com</strong> with your TradingView username</p>
 </div>
 
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">AlgoChief</div>
   <p>© 2025 AlgoChief. All rights reserved. Trading involves significant risk of loss.</p>
-  <p style="margin-top:0.5rem">📧 Kisi bhi problem ke liye contact karein: <a href="mailto:algovisionx2@gmail.com" style="color:#00E5A0;text-decoration:none">algovisionx2@gmail.com</a></p>
+  <p style="margin-top:0.5rem">📧 For any issues, contact us: <a href="mailto:algochiefsupport@gmail.com" style="color:#00E5A0;text-decoration:none">algochiefsupport@gmail.com</a></p>
   <div class="footer-links" style="margin-top:0.8rem">
     <a href="#">TradingView</a>
     <a href="#">Telegram</a>
@@ -3081,20 +3099,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 
 
 
-
-<style>
-.chat-dropdown{position:relative;display:inline-block}
-.chat-menu{
-display:none;position:absolute;top:115%;right:0;width:360px;
-background:#ffffff;border:2px solid #e5e7eb;border-radius:20px;
-padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.22);z-index:99999
-}
-.chat-menu.show{display:block}
-.chat-item{display:block;text-decoration:none;color:#111;padding:12px 8px;border-radius:10px}
-.chat-item:hover{background:#f5f7fb}
-.chat-title{font-weight:700;text-align:center;margin-bottom:16px}
-.chat-sub{color:#444;margin-top:4px}
-</style>
 
 <script>
 function toggleChatMenu(){
