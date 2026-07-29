@@ -3255,8 +3255,8 @@ document.addEventListener('click',function(e){
         </div>
         <div class="trial-field">
           <label>Phone Number</label>
-          <input type="tel" id="trialPhone" required placeholder="10-digit mobile number" inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}">
-          <p class="trial-error" id="trialPhoneErr">Enter a valid 10-digit mobile number</p>
+          <input type="tel" id="trialPhone" required placeholder="+91 9876543210 or +1 5551234567" inputmode="tel" autocomplete="tel" maxlength="25">
+          <p class="trial-error" id="trialPhoneErr">Enter a valid international mobile number</p>
         </div>
         <div class="trial-field">
           <label>TradingView Username</label>
@@ -3331,8 +3331,10 @@ function validateTrialForm(){
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim());
   if(!emailOk){ emailEl.classList.add('trial-invalid'); valid = false; }
 
-  const phoneDigits = phoneEl.value.trim();
-  const phoneOk = /^[6-9][0-9]{9}$/.test(phoneDigits);
+  const phoneValue = phoneEl.value.trim();
+  const phoneDigits = phoneValue.replace(/\D/g, '');
+  const phoneFormatOk = /^\+?[0-9\s().-]+$/.test(phoneValue);
+  const phoneOk = phoneFormatOk && phoneDigits.length >= 7 && phoneDigits.length <= 15;
   if(!phoneOk){
     phoneEl.classList.add('trial-invalid');
     phoneErr.classList.add('show');
