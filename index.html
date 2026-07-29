@@ -63,8 +63,8 @@
   --red:#FF4D6A;
   --gold:#FFB800;
 }
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);overflow-x:hidden}
+html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);overflow-x:hidden;max-width:100%}
 h1,h2,h3,h4,h5{font-family:'Exo 2',sans-serif}
 
 /* SCROLLBAR */
@@ -85,7 +85,7 @@ nav{
 .logo{
   font-family:'Exo 2',sans-serif;font-size:1.35rem;font-weight:900;
   color:var(--text);letter-spacing:-0.5px;
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
 }
 .logo-icon{
   width:32px;height:32px;border-radius:8px;
@@ -481,12 +481,52 @@ footer p{color:var(--muted);font-size:0.75rem}
   footer{flex-direction:column;text-align:center}
 }
 
+/* ── PHONE FIX: many strategy cards below use hardcoded inline
+   grid-template-columns (5-col / 3-col / 2-col). On narrow phones those
+   forced fixed column counts are what push the page wider than the
+   screen and cause the "cut off / scroll sideways" bug. Force them to
+   wrap responsively instead. ── */
+@media(max-width:640px){
+  [style*="grid-template-columns:repeat(5,1fr)"],
+  [style*="grid-template-columns: repeat(5,1fr)"],
+  [style*="grid-template-columns:1fr 1fr 1fr"]{
+    grid-template-columns:repeat(auto-fit,minmax(96px,1fr)) !important;
+  }
+  [style*="grid-template-columns:1fr 1fr"]:not([style*="1fr 1fr 1fr"]){
+    grid-template-columns:1fr 1fr !important;
+  }
+  img,video,iframe,table{max-width:100%}
+  * { word-wrap:break-word; }
+}
+
+@media(max-width:640px){
+  /* floating bottom button already offers the trial CTA on mobile —
+     drop the nav copy so the header doesn't get cramped */
+  #trialBtnNav{display:none}
+}
+
+@media(max-width:520px){
+  nav{padding:0.8rem 1rem;flex-wrap:wrap;row-gap:0.5rem}
+  .logo{font-size:1.1rem}
+  .nav-right{gap:0.4rem}
+  .btn-access{padding:0.5rem 0.7rem;font-size:0.74rem}
+  .chat-menu{width:260px;max-width:85vw;padding:16px}
+  .hero{padding:2rem 1rem 1.5rem}
+  .container{padding:2.5rem 1rem}
+  .apply-wrap{padding:2.5rem 1rem}
+  .apply-form{max-width:100%}
+  .price-grid{grid-template-columns:1fr !important}
+  [style*="grid-template-columns:1fr 1fr"]:not([style*="1fr 1fr 1fr"]){
+    grid-template-columns:1fr !important;
+  }
+}
+
 
 </style>
 <style>
 .chat-dropdown{position:relative;display:inline-block}
 .chat-menu{
-display:none;position:absolute;top:115%;right:0;width:360px;
+display:none;position:absolute;top:115%;right:0;width:360px;max-width:88vw;
 background:#ffffff;border:2px solid #e5e7eb;border-radius:20px;
 padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.22);z-index:99999
 }
@@ -498,6 +538,22 @@ padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.22);z-index:99999
 </style>
 </head>
 <body>
+
+<!-- FLOATING FREE TRIAL BUTTON (mobile only — always visible, doesn't scroll away) -->
+<style>
+.floating-trial-btn{
+  display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+  z-index:9998;background:linear-gradient(90deg,#00E5A0,#00B37A);color:#04120C;
+  font-family:'Exo 2',sans-serif;font-weight:800;font-size:0.92rem;
+  padding:0.85rem 1.4rem;border-radius:999px;text-decoration:none;
+  box-shadow:0 8px 28px rgba(0,229,160,0.45);white-space:nowrap;
+  border:1px solid rgba(255,255,255,0.25);
+}
+@media(max-width:640px){
+  .floating-trial-btn{display:flex;align-items:center;gap:6px}
+}
+</style>
+<a href="#" class="floating-trial-btn" onclick="openTrialModal();return false;">🎁 Get Free 2-Day Trial</a>
 
 <!-- NAV -->
 <nav>
@@ -512,7 +568,7 @@ padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.22);z-index:99999
     <li><a href="#pricing">Pricing</a></li>
   </ul>
   <div class="nav-right">
-    <a href="#pricing" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'});return false;" class="btn-access">Get Access →</a> <a href="#" id="chatNowBtn" onclick="toggleChatMenu();return false;" class="btn-access" style="background:linear-gradient(90deg,#00D4FF,#1E8FFF);margin-left:10px;">💬 Chat Now</a>
+    <a href="#pricing" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'});return false;" class="btn-access">Get Access →</a> <a href="#" id="trialBtnNav" onclick="openTrialModal();return false;" class="btn-access" style="background:linear-gradient(90deg,#00E5A0,#00B37A);margin-left:10px;">🎁 Free 2-Day Trial</a> <a href="#" id="chatNowBtn" onclick="toggleChatMenu();return false;" class="btn-access" style="background:linear-gradient(90deg,#00D4FF,#1E8FFF);margin-left:10px;">💬 Chat Now</a>
 <div id="chatMenu" class="chat-menu">
 <div class="chat-title" style="font-size:22px;font-weight:800;color:#111827;
 text-align:center;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #e5e7eb;">
@@ -3109,6 +3165,232 @@ document.addEventListener('click',function(e){
  let b=document.getElementById('chatNowBtn');
  if(m && !m.contains(e.target) && b && !b.contains(e.target)){m.classList.remove('show');}
 });
+</script>
+
+<!-- ══════════ FREE 2-DAY TRIAL MODAL ══════════ -->
+<style>
+.trial-overlay{
+  display:none;position:fixed;inset:0;background:rgba(2,5,15,0.72);
+  backdrop-filter:blur(4px);z-index:100000;align-items:center;justify-content:center;
+  padding:16px;
+}
+.trial-overlay.show{display:flex}
+.trial-box{
+  width:100%;max-width:420px;max-height:92vh;overflow-y:auto;
+  background:var(--navy3,#0C1330);border:1px solid rgba(0,229,160,0.3);
+  border-radius:18px;padding:1.8rem 1.6rem;position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,0.5);
+  font-family:'DM Sans',sans-serif;
+}
+.trial-close{
+  position:absolute;top:14px;right:16px;background:none;border:none;
+  color:#8A9BC0;font-size:1.4rem;cursor:pointer;line-height:1;
+}
+.trial-close:hover{color:#fff}
+.trial-box h3{
+  font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.35rem;
+  color:#fff;margin-bottom:0.4rem;padding-right:1.5rem;
+}
+.trial-box .trial-sub{color:#8A9BC0;font-size:0.85rem;margin-bottom:1.4rem;line-height:1.6}
+.trial-box .trial-sub strong{color:#00E5A0}
+.trial-field{margin-bottom:0.9rem}
+.trial-field label{display:block;color:#8A9BC0;font-size:0.78rem;margin-bottom:0.35rem}
+.trial-field input{
+  width:100%;background:#080D22;border:1px solid rgba(30,143,255,0.25);
+  color:#E8EFFF;padding:0.75rem 0.9rem;border-radius:9px;font-size:0.92rem;
+  outline:none;font-family:inherit;transition:border 0.2s;
+}
+.trial-field input:focus{border-color:#00E5A0}
+.trial-field input.trial-invalid{border-color:#FF4D6A}
+.trial-error{display:none;color:#FF4D6A;font-size:0.72rem;margin-top:0.35rem}
+.trial-error.show{display:block}
+.trial-submit{
+  width:100%;margin-top:0.4rem;background:linear-gradient(90deg,#00E5A0,#00B37A);
+  color:#04120C;border:none;padding:0.9rem;border-radius:10px;
+  font-family:'Exo 2',sans-serif;font-weight:800;font-size:0.95rem;
+  cursor:pointer;transition:opacity 0.2s;
+}
+.trial-submit:hover{opacity:0.88}
+.trial-submit:disabled{opacity:0.6;cursor:not-allowed}
+.trial-note{color:#5A6A99;font-size:0.72rem;text-align:center;margin-top:0.9rem}
+.trial-success{display:none;text-align:center;padding:1rem 0}
+.trial-success .tick{font-size:2.6rem;margin-bottom:0.6rem}
+.trial-success h4{font-family:'Exo 2',sans-serif;color:#fff;font-size:1.15rem;margin-bottom:0.5rem}
+.trial-success p{color:#8A9BC0;font-size:0.85rem;line-height:1.6}
+</style>
+
+<div class="trial-overlay" id="trialOverlay" onclick="if(event.target===this)closeTrialModal()">
+  <div class="trial-box">
+    <button class="trial-close" onclick="closeTrialModal()">✕</button>
+
+    <div id="trialFormWrap">
+      <h3>🎁 Get Your Free 2-Day Trial</h3>
+      <p class="trial-sub">Fill this in and our team will activate your <strong>2-day free access</strong> on TradingView shortly.</p>
+
+      <form id="trialForm" onsubmit="submitTrialForm(event)">
+        <div class="trial-field">
+          <label>Full Name</label>
+          <input type="text" id="trialName" required placeholder="Your name">
+        </div>
+        <div class="trial-field">
+          <label>Email</label>
+          <input type="email" id="trialEmail" required placeholder="you@example.com">
+        </div>
+        <div class="trial-field">
+          <label>Phone Number</label>
+          <input type="tel" id="trialPhone" required placeholder="10-digit mobile number" inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}">
+          <p class="trial-error" id="trialPhoneErr">Enter a valid 10-digit mobile number</p>
+        </div>
+        <div class="trial-field">
+          <label>TradingView Username</label>
+          <input type="text" id="trialTV" required placeholder="Your TradingView username">
+        </div>
+        <button type="submit" class="trial-submit" id="trialSubmitBtn">Claim Free Trial →</button>
+        <p class="trial-note">We'll grant access to your TradingView username directly — no card needed.</p>
+      </form>
+    </div>
+
+    <div class="trial-success" id="trialSuccess">
+      <div class="tick">✅</div>
+      <h4>Request Received!</h4>
+      <p>Thanks! We've got your details — your 2-day free trial access will be activated on TradingView shortly.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   FREE TRIAL POPUP + INSTANT TELEGRAM NOTIFICATION
+   ─────────────────────────────────────────────────────────────
+   Setup (one-time, ~2 minutes):
+   1. In Telegram, search for "BotFather" → tap Start → send /newbot
+      and follow the steps to create a bot. BotFather gives you a
+      TOKEN like: 123456789:AAExampleTokenHere
+   2. Search for YOUR new bot by the username you gave it, open it,
+      and tap Start (send it any message, e.g. "hi").
+   3. In your browser, open:
+      https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates
+      Look for "chat":{"id":123456789 ...} — that number is your CHAT ID.
+   4. Paste both values below. That's it — every trial request will
+      now ping you instantly on Telegram, wherever you are.
+   ───────────────────────────────────────────────────────────── */
+const TELEGRAM_BOT_TOKEN = "8628753418:AAFd_yL_l1mw9ZhfUUSDf_EL_Q3f8WK89hM";
+const TELEGRAM_CHAT_ID   = "5074153469";
+
+function openTrialModal(){
+  document.getElementById('trialOverlay').classList.add('show');
+  document.getElementById('trialFormWrap').style.display='block';
+  document.getElementById('trialSuccess').style.display='none';
+  document.body.style.overflow='hidden';
+}
+function closeTrialModal(){
+  document.getElementById('trialOverlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function validateTrialForm(){
+  let valid = true;
+
+  const nameEl  = document.getElementById('trialName');
+  const emailEl = document.getElementById('trialEmail');
+  const phoneEl = document.getElementById('trialPhone');
+  const tvEl    = document.getElementById('trialTV');
+  const phoneErr = document.getElementById('trialPhoneErr');
+
+  [nameEl, emailEl, phoneEl, tvEl].forEach(el => el.classList.remove('trial-invalid'));
+  phoneErr.classList.remove('show');
+
+  if(nameEl.value.trim().length < 2){ nameEl.classList.add('trial-invalid'); valid = false; }
+
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim());
+  if(!emailOk){ emailEl.classList.add('trial-invalid'); valid = false; }
+
+  const phoneDigits = phoneEl.value.trim();
+  const phoneOk = /^[6-9][0-9]{9}$/.test(phoneDigits);
+  if(!phoneOk){
+    phoneEl.classList.add('trial-invalid');
+    phoneErr.classList.add('show');
+    valid = false;
+  }
+
+  if(tvEl.value.trim().length < 2){ tvEl.classList.add('trial-invalid'); valid = false; }
+
+  return valid;
+}
+
+async function submitTrialForm(e){
+  e.preventDefault();
+
+  if(!validateTrialForm()){
+    return; // stop here — do NOT show success, do NOT send notification
+  }
+
+  const name  = document.getElementById('trialName').value.trim();
+  const email = document.getElementById('trialEmail').value.trim();
+  const phone = document.getElementById('trialPhone').value.trim();
+  const tv    = document.getElementById('trialTV').value.trim();
+  const btn   = document.getElementById('trialSubmitBtn');
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  const message =
+    "🎁 NEW FREE TRIAL REQUEST — AlgoChief\n" +
+    "Name: " + name + "\n" +
+    "Email: " + email + "\n" +
+    "Phone: " + phone + "\n" +
+    "TradingView Username: " + tv;
+
+  try{
+    if(TELEGRAM_BOT_TOKEN && TELEGRAM_BOT_TOKEN.indexOf("PASTE_") === -1){
+      await fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
+      });
+    }
+  }catch(err){
+    console.error("Telegram notify failed:", err);
+    // form still counts as submitted for the user even if the network call fails
+  }
+
+  document.getElementById('trialFormWrap').style.display='none';
+  document.getElementById('trialSuccess').style.display='block';
+  btn.disabled = false;
+  btn.textContent = 'Claim Free Trial →';
+  document.getElementById('trialForm').reset();
+
+  setTimeout(closeTrialModal, 3500);
+}
+</script>
+
+<!-- ══════════ LIVE CHAT WIDGET (Tawk.to — free) ══════════
+   Har visitor jo chat bubble kholega, uska apna alag private
+   conversation ban jayega. Aap Tawk.to dashboard (ya mobile app)
+   se seedha reply kar sakte ho, aur naye message pe notification
+   bhi milegi.
+
+   Setup (5 minute, ek baar):
+   1. https://www.tawk.to pe free sign up karo
+   2. "Add Property" → apni site ka naam + URL daalo
+   3. Dashboard → Administration → Chat Widget → "Widget code"
+      wahan se poora script tag copy karo
+      (usme tumhara khud ka Property ID aur Widget ID hoga,
+       jaisa: https://embed.tawk.to/XXXXXXXXXXXXX/XXXXXXXXX)
+   4. Neeche wale placeholder script tag ko us copied code se replace kar do
+   5. Phone me "Tawk.to" app install kar lo — usi se turant reply
+      kar paoge jaha bhi ho
+   ────────────────────────────────────────────────────────── -->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6a69eac6e906ba1d4441f63c/1jumrq6g6';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
 </script>
 
 </body>
