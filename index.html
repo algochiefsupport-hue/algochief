@@ -5,22 +5,214 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M8EDRX7BVG"></script>
-
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-M8EDRX7BVG"></script>
-
-
-
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'G-M8EDRX7BVG');
+</script>
+
+<script>
+// ── EARLY NAVIGATION ROUTER & INSTANT RESPONSE HANDLERS ──
+// Unblocks all navigation clicks, modals, and tab switches even while 19MB HTML is loading!
+var currentPage = 'page-home';
+var pendingPageId = null;
+var pendingAnchorId = null;
+var userHasNavigated = false;
+
+function updateActiveNav(key) {
+  try {
+    document.querySelectorAll('.nav-links a[data-nav], .mob-nav-tab[data-nav]').forEach(function(a) {
+      a.classList.toggle('active', key !== null && a.getAttribute('data-nav') === key);
+    });
+  } catch(e) {}
+}
+
+function showPage(id, opts) {
+  opts = opts || {};
+  userHasNavigated = true;
+  var chatM = document.getElementById('chatMenu');
+  if (chatM) { chatM.classList.remove('show'); }
+
+  var targetEl = document.getElementById(id);
+  if (targetEl) {
+    document.querySelectorAll('.page-view').forEach(function(el) { el.style.display = 'none'; });
+    targetEl.style.display = 'block';
+    window.scrollTo(0, 0);
+    currentPage = id;
+    pendingPageId = null;
+    if (id === 'page-backtest' && typeof showSymbol === 'function') {
+      showSymbol(typeof currentSymbol !== 'undefined' ? currentSymbol : 'sym-xau', { scroll: false });
+    }
+  } else {
+    pendingPageId = id;
+  }
+
+  if (id === 'page-backtest' || id === 'page-pricing') {
+    updateActiveNav(id);
+  } else if (id === 'page-home') {
+    updateActiveNav('strategies');
+  } else {
+    updateActiveNav(null);
+  }
+
+  var getAccessBtn = document.getElementById('getAccessBtnNav');
+  if (getAccessBtn) { getAccessBtn.style.display = (id === 'page-pricing') ? 'none' : ''; }
+
+  if (opts.pushHistory !== false) {
+    try {
+      history.pushState({ page: id }, '', '#' + id);
+    } catch(e) {}
+  }
+}
+
+function goToHome(anchorId) {
+  userHasNavigated = true;
+  showPage('page-home');
+  updateActiveNav('strategies');
+  if (anchorId) {
+    pendingAnchorId = anchorId;
+    var t = document.getElementById(anchorId);
+    if (t) {
+      t.scrollIntoView({ behavior: 'instant' });
+      pendingAnchorId = null;
+    }
+  }
+}
+
+function goToBacktest(anchorId) {
+  userHasNavigated = true;
+  showPage('page-backtest');
+  updateActiveNav('page-backtest');
+  if (anchorId) {
+    pendingAnchorId = anchorId;
+    var t = document.getElementById(anchorId);
+    if (t) {
+      t.scrollIntoView({ behavior: 'instant' });
+      pendingAnchorId = null;
+    }
+  }
+}
+
+function goToPolicy(policyId) {
+  userHasNavigated = true;
+  showPage('page-policy');
+  if (typeof openPolicyTab === 'function') {
+    openPolicyTab(policyId);
+  }
+}
+
+function openTrialModal() {
+  var ov = document.getElementById('trialOverlay');
+  if (ov) {
+    if (ov.parentElement !== document.body) { document.body.appendChild(ov); }
+    ov.classList.add('show');
+    var form = document.getElementById('trialFormWrap');
+    if (form) form.style.display = 'block';
+    var succ = document.getElementById('trialSuccess');
+    if (succ) succ.style.display = 'none';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeTrialModal() {
+  var ov = document.getElementById('trialOverlay');
+  if (ov) {
+    ov.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+function toggleChatMenu() {
+  var menu = document.getElementById('chatMenu');
+  if (menu) { menu.classList.toggle('show'); }
+}
+
+// Seamless On-Demand Video Loader (Zero initial network & zero CPU load)
+function loadAndPlayVideo(type, embedUrl) {
+  var facadeId = (type === 'backtest') ? 'backtestVideoFacade' : 'automationVideoFacade';
+  var containerId = (type === 'backtest') ? 'backtestVideoContainer' : 'automationVideoContainer';
+  var wrapId = (type === 'backtest') ? 'backtestVideoWrap' : 'automationVideoWrap';
+  var facade = document.getElementById(facadeId);
+  var container = document.getElementById(containerId);
+  var wrap = document.getElementById(wrapId);
+  if (!container) return;
+
+  // Lock wrap height BEFORE iframe loads so page does NOT jump/scroll
+  if (wrap) {
+    var wrapHeight = wrap.offsetHeight;
+    if (wrapHeight > 0) {
+      wrap.style.minHeight = wrapHeight + 'px';
+    }
+  }
+
+  // Show loading state inside facade (keep facade visible so layout stays)
+  if (facade) {
+    facade.style.pointerEvents = 'none';
+    facade.innerHTML = '<div class="video-facade-loading"><div class="video-spinner"></div><div>Loading Video Player...</div></div>';
+  }
+
+  // Create iframe fully configured BEFORE appending (avoids layout shifts)
+  var iframe = document.createElement('iframe');
+  var playUrl = embedUrl + (embedUrl.indexOf('?') === -1 ? '?autoplay=1' : '&autoplay=1');
+  iframe.title = (type === 'backtest') ? 'Backtest Strategy Walkthrough' : 'How Webhook Automation Works';
+  iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope';
+  iframe.allowFullscreen = true;
+  iframe.setAttribute('webkitallowfullscreen', 'true');
+  iframe.setAttribute('mozallowfullscreen', 'true');
+  iframe.setAttribute('playsinline', 'true');
+  iframe.setAttribute('scrolling', 'no');
+  iframe.style.cssText = 'width:100%;height:100%;border:0;position:absolute;top:0;left:0;display:block;';
+
+  iframe.onload = function() {
+    if (facade) {
+      facade.style.transition = 'opacity 0.3s ease';
+      facade.style.opacity = '0';
+      setTimeout(function() {
+        facade.style.display = 'none';
+      }, 320);
+    }
+    // Release height lock after iframe is loaded
+    if (wrap) { wrap.style.minHeight = ''; }
+  };
+
+  // Timeout fallback — hide facade even if onload never fires (some embeds don't fire it)
+  var fallbackTimer = setTimeout(function() {
+    if (facade && facade.style.display !== 'none') {
+      facade.style.opacity = '0';
+      setTimeout(function() { facade.style.display = 'none'; }, 320);
+    }
+  }, 5000);
+
+  // Clear existing iframe if any, then append new
+  container.innerHTML = '';
+  container.style.cssText = 'width:100%;height:100%;display:block;position:absolute;top:0;left:0;';
+  container.appendChild(iframe);
+
+  // Set src AFTER append — avoids some mobile browser freezes
+  setTimeout(function() { iframe.src = playUrl; }, 0);
+}
+
+// Watch DOM streaming to fulfill pending page switches as elements arrive
+var pendingPageWatcher = setInterval(function() {
+  if (pendingPageId) {
+    var el = document.getElementById(pendingPageId);
+    if (el) {
+      showPage(pendingPageId, { pushHistory: false });
+    }
+  }
+  if (pendingAnchorId) {
+    var anchor = document.getElementById(pendingAnchorId);
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'instant' });
+      pendingAnchorId = null;
+    }
+  }
+  if (document.readyState === 'complete') {
+    clearInterval(pendingPageWatcher);
+  }
+}, 50);
 </script>
 
 <title>AlgoChief — Invite-Only TradingView Strategy</title>
@@ -1557,15 +1749,23 @@ body{padding-top:var(--navh,72px)}
 .video-responsive-wrap {
   position: relative;
   width: 100%;
-  padding-bottom: 56.25%;
-  height: 0;
+  aspect-ratio: 16 / 9;
   border-radius: 12px;
   overflow: hidden;
-  background: #000;
-  border: 1px solid rgba(0, 212, 255, 0.22);
+  background: #040814;
+  border: 1px solid rgba(0, 212, 255, 0.28);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
   margin-top: 1rem;
   margin-bottom: 0.9rem;
+  /* Prevent iframe from breaking out of container */
+  contain: layout style;
+  isolation: isolate;
+}
+@supports not (aspect-ratio: 16 / 9) {
+  .video-responsive-wrap {
+    height: 0;
+    padding-bottom: 56.25%;
+  }
 }
 a:not([href]), a[role="button"], [data-action-href] {
   cursor: pointer;
@@ -1574,17 +1774,202 @@ a:not([href]), a[role="button"], [data-action-href] {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  transform: none !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
 }
 @media (max-width: 600px) {
-  .video-responsive-wrap iframe {
-    width: 133.333% !important;
-    height: 133.333% !important;
-    transform: scale(0.75) !important;
-    transform-origin: top left !important;
+  .video-tutorial-card {
+    padding: 1rem 0.75rem !important;
+    margin: 1rem 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
   }
+  .video-responsive-wrap {
+    margin-top: 0.6rem !important;
+    margin-bottom: 0.6rem !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    /* Explicit height fallback for all mobile browsers */
+    min-height: 195px;
+    max-height: 60vw;
+    aspect-ratio: 16 / 9 !important;
+    overflow: hidden !important;
+    contain: layout style !important;
+  }
+  .video-responsive-wrap iframe {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    border: 0 !important;
+  }
+  .video-facade {
+    border-radius: 10px !important;
+  }
+  .video-facade-content {
+    padding: 0.7rem 0.4rem !important;
+  }
+  .video-facade-title {
+    font-size: 0.88rem !important;
+  }
+  .video-facade-play-btn {
+    width: 50px !important;
+    height: 50px !important;
+  }
+  .video-facade-play-pulse::before {
+    width: 62px !important;
+    height: 62px !important;
+  }
+  .video-facade-meta .v-pill {
+    font-size: 0.65rem !important;
+  }
+}
+
+/* ── VIDEO FACADE & ON-DEMAND LAZY LOAD ── */
+.video-facade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  overflow: hidden;
+  border-radius: 10px;
+  background: radial-gradient(circle at center, #0F1D3D 0%, #060B18 100%);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.3s ease;
+}
+.video-facade-backdrop {
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(180deg, rgba(6, 11, 24, 0.45) 0%, rgba(6, 11, 24, 0.9) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(0, 212, 255, 0.04) 24px, rgba(0, 212, 255, 0.04) 25px);
+  pointer-events: none;
+}
+.video-facade-backdrop.backtest-bg {
+  background: 
+    linear-gradient(180deg, rgba(6, 11, 24, 0.45) 0%, rgba(6, 11, 24, 0.9) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(0, 229, 160, 0.04) 24px, rgba(0, 229, 160, 0.04) 25px);
+}
+.video-facade-glow {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.28) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(22px);
+}
+.video-facade-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+}
+.video-facade-play-pulse {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+.video-facade-play-pulse::before {
+  content: '';
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.28);
+  animation: vidPulse 2s infinite ease-out;
+}
+@keyframes vidPulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.video-facade-play-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00D4FF, #00E5A0);
+  box-shadow: 0 4px 22px rgba(0, 212, 255, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+.video-facade:hover .video-facade-play-btn {
+  transform: scale(1.1);
+  box-shadow: 0 6px 28px rgba(0, 229, 160, 0.7);
+}
+.video-facade-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 0.4rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+.video-facade-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 0.35rem;
+}
+.video-facade-meta .v-pill {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #00D4FF;
+}
+.video-facade-note {
+  font-size: 0.72rem;
+  color: #8899B8;
+}
+.video-facade-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #00D4FF;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.video-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(0, 212, 255, 0.2);
+  border-top-color: #00D4FF;
+  border-radius: 50%;
+  animation: vidSpin 0.8s linear infinite;
+}
+@keyframes vidSpin {
+  to { transform: rotate(360deg); }
 }
 .video-focus-overlay-btn {
   position: absolute;
@@ -3914,20 +4299,40 @@ a:not([href]), a[role="button"], [data-action-href] {
 
     </div>
 
-    <!-- Responsive 16:9 Video Embed with Focus Mode Trigger -->
-    <div class="video-responsive-wrap">
-      <iframe 
-        id="automationVideoIframe" 
-        src="https://drive.google.com/file/d/1PdIX5zYxUcuvjfyrm_R52DkFvCLMH3d1/preview" 
-        title="How Webhook Automation Works"
-        allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope" 
-        allowfullscreen="true" 
-        webkitallowfullscreen="true" 
-        mozallowfullscreen="true" 
-        playsinline="true" 
-        loading="lazy">
-      </iframe>
-
+    <!-- Responsive 16:9 Video Embed with On-Demand Click-to-Play Facade -->
+    <div class="video-responsive-wrap" id="automationVideoWrap">
+      <!-- High-Tech Cyber Facade (Zero Bandwidth Until Clicked) -->
+      <div class="video-facade" id="automationVideoFacade" onclick="loadAndPlayVideo('automation', 'https://drive.google.com/file/d/1PdIX5zYxUcuvjfyrm_R52DkFvCLMH3d1/preview')" role="button" tabindex="0" aria-label="Play Webhook Automation Video">
+        <div class="video-facade-backdrop"></div>
+        <div class="video-facade-glow"></div>
+        <div class="video-facade-content">
+          <div class="video-facade-play-pulse">
+            <div class="video-facade-play-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#060B18" style="margin-left:3px;"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+          </div>
+          <div class="video-facade-title">▶ Tap to Play Video (TraderPost Demo)</div>
+          <div class="video-facade-meta">
+            <span class="v-pill">⚡ 1080p HD</span>
+            <span class="v-pill">⏱ 2 Min Setup</span>
+            <span class="v-pill">🚀 Live Broker Execution</span>
+          </div>
+          <div class="video-facade-note">Click to load &amp; play instantly without slowing page</div>
+        </div>
+      </div>
+      <div id="automationVideoContainer" style="width:100%;height:100%;display:none;"></div>
+      <button type="button" class="video-focus-overlay-btn" onclick="openVideoModal('https://drive.google.com/file/d/1PdIX5zYxUcuvjfyrm_R52DkFvCLMH3d1/preview', 'https://drive.google.com/file/d/1PdIX5zYxUcuvjfyrm_R52DkFvCLMH3d1/view', 'How Webhook Automation Works (TraderPost Setup Guide)', '🎬 Video Tutorial');" title="Expand Fullscreen Modal" aria-label="Expand Fullscreen Modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+    </div>
+    <!-- Direct Google Drive Play Button for Mobile Users -->
+    <div style="display:flex;gap:10px;margin-top:0.6rem;flex-wrap:wrap;">
+      <a href="https://drive.google.com/file/d/1PdIX5zYxUcuvjfyrm_R52DkFvCLMH3d1/view" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:7px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.35);color:#00D4FF;padding:0.45rem 0.9rem;border-radius:8px;font-size:0.78rem;font-weight:700;text-decoration:none;font-family:'Exo 2',sans-serif;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,212,255,0.2)'" onmouseout="this.style.background='rgba(0,212,255,0.1)'">
+        <span>⚡ Open in Google Drive App (Direct HD)</span>
+      </a>
+      <button type="button" onclick="loadAndPlayVideo('automation', 'https://drive.google.com/file/d/1PdIX5zYxUcuvjfyrm_R52DkFvCLMH3d1/preview')" style="display:inline-flex;align-items:center;gap:7px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.35);color:#00E5A0;padding:0.45rem 0.9rem;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,229,160,0.2)'" onmouseout="this.style.background='rgba(0,229,160,0.1)'">
+        <span>▶ Play Embedded Here</span>
+      </button>
     </div>
 
     <!-- Note & Clarification Box as specifically requested by user -->
@@ -8416,20 +8821,40 @@ a:has(.result-card-photo) {
 
     </div>
 
-    <!-- Responsive 16:9 Video Embed with Focus Mode Trigger -->
-    <div class="video-responsive-wrap" style="border-color:rgba(0,229,160,0.25);">
-      <iframe 
-        id="backtestVideoIframe" 
-        src="https://drive.google.com/file/d/1QJlc2lxeDLavy0p8DpKPGrmDaGctWPuJ/preview" 
-        title="Backtest Strategy Walkthrough"
-        allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope" 
-        allowfullscreen="true" 
-        webkitallowfullscreen="true" 
-        mozallowfullscreen="true" 
-        playsinline="true" 
-        loading="lazy">
-      </iframe>
-
+    <!-- Responsive 16:9 Video Embed with On-Demand Click-to-Play Facade -->
+    <div class="video-responsive-wrap" id="backtestVideoWrap" style="border-color:rgba(0,229,160,0.28);">
+      <!-- High-Tech Cyber Facade (Zero Bandwidth Until Clicked) -->
+      <div class="video-facade" id="backtestVideoFacade" onclick="loadAndPlayVideo('backtest', 'https://drive.google.com/file/d/1QJlc2lxeDLavy0p8DpKPGrmDaGctWPuJ/preview')" role="button" tabindex="0" aria-label="Play Backtest Strategy Walkthrough Video">
+        <div class="video-facade-backdrop backtest-bg"></div>
+        <div class="video-facade-glow" style="background:radial-gradient(circle, rgba(0, 229, 160, 0.28) 0%, transparent 70%);"></div>
+        <div class="video-facade-content">
+          <div class="video-facade-play-pulse">
+            <div class="video-facade-play-btn" style="background:linear-gradient(135deg, #00E5A0, #00D4FF);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#060B18" style="margin-left:3px;"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+          </div>
+          <div class="video-facade-title" style="color:#00E5A0;">▶ Tap to Play Strategy &amp; Backtest Guide</div>
+          <div class="video-facade-meta">
+            <span class="v-pill" style="color:#00E5A0;border-color:rgba(0,229,160,0.3);">⚡ Complete Masterclass</span>
+            <span class="v-pill" style="color:#00E5A0;border-color:rgba(0,229,160,0.3);">📊 TradingView Calibration</span>
+            <span class="v-pill" style="color:#00E5A0;border-color:rgba(0,229,160,0.3);">📈 Report Verification</span>
+          </div>
+          <div class="video-facade-note">Click to load &amp; play instantly without slowing page</div>
+        </div>
+      </div>
+      <div id="backtestVideoContainer" style="width:100%;height:100%;display:none;"></div>
+      <button type="button" class="video-focus-overlay-btn" onclick="openVideoModal('https://drive.google.com/file/d/1QJlc2lxeDLavy0p8DpKPGrmDaGctWPuJ/preview', 'https://drive.google.com/file/d/1QJlc2lxeDLavy0p8DpKPGrmDaGctWPuJ/view', 'How to Apply Strategy, Calibrate Settings & Verify Backtests', '📺 Video Guide');" title="Expand Fullscreen Modal" aria-label="Expand Fullscreen Modal" style="border-color:rgba(0,229,160,0.45);color:#00E5A0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+    </div>
+    <!-- Direct Google Drive Play Button for Mobile Users -->
+    <div style="display:flex;gap:10px;margin-top:0.6rem;flex-wrap:wrap;">
+      <a href="https://drive.google.com/file/d/1QJlc2lxeDLavy0p8DpKPGrmDaGctWPuJ/view" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:7px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.35);color:#00E5A0;padding:0.45rem 0.9rem;border-radius:8px;font-size:0.78rem;font-weight:700;text-decoration:none;font-family:'Exo 2',sans-serif;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,229,160,0.2)'" onmouseout="this.style.background='rgba(0,229,160,0.1)'">
+        <span>⚡ Open in Google Drive App (Direct HD)</span>
+      </a>
+      <button type="button" onclick="loadAndPlayVideo('backtest', 'https://drive.google.com/file/d/1QJlc2lxeDLavy0p8DpKPGrmDaGctWPuJ/preview')" style="display:inline-flex;align-items:center;gap:7px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.35);color:#00D4FF;padding:0.45rem 0.9rem;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,212,255,0.2)'" onmouseout="this.style.background='rgba(0,212,255,0.1)'">
+        <span>▶ Play Embedded Here</span>
+      </button>
     </div>
 
     <!-- 4-Step Action Breakdown -->
@@ -8847,23 +9272,27 @@ a:has(.result-card-photo) {
 </div>
 
 <script>
-// Always open the site fresh at the very top — ignore any leftover #hash
-// from a previous visit/share-link and don't let the browser auto-jump
-// to a matching section id when the page first loads.
-if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-// Perform initial scroll to top once only if at cold start
-if (window.scrollY > 0 && !window.location.hash) {
-  window.scrollTo(0, 0);
+// Prevent forced scroll jumping or resetting user view
+if ('scrollRestoration' in history) { history.scrollRestoration = 'auto'; }
+
+// Only scroll to top on initial clean load if user has NOT navigated or scrolled already
+if (window.scrollY > 0 && !window.location.hash && !userHasNavigated) {
+  // Respect user position if they already started scrolling or reading
 }
 </script>
 <script>
-var currentPage = 'page-home';
-
-// Show the underline on "Strategies" immediately on load, since Strategies
-// is the default/top section on the home page — same treatment Backtesting
-// Report and Pricing get when you click into them.
+// Check initial route or hash on DOM load without overriding user navigation
 document.addEventListener('DOMContentLoaded', function(){
-  updateActiveNav('strategies');
+  if (userHasNavigated || pendingPageId) {
+    // User already clicked a page while loading; do not reset!
+    return;
+  }
+  var hash = window.location.hash ? window.location.hash.replace('#', '') : '';
+  if (hash === 'page-pricing' || hash === 'page-backtest' || hash === 'page-policy') {
+    showPage(hash, { pushHistory: false });
+  } else {
+    updateActiveNav('strategies');
+  }
 });
 
 function updateActiveNav(key){
@@ -9252,11 +9681,27 @@ function getOrCreateVisitorId() {
 // Function to track visitor arrival and send live Telegram notification
 async function trackVisitorArrival() {
   try {
-    // 5-second session debounce to prevent duplicate spam on rapid reload
     var now = Date.now();
+    // 10-second session debounce to prevent duplicate spam on rapid reload
     var lastSent = parseInt(sessionStorage.getItem('ac_visitor_alert_sent') || '0', 10);
-    if (now - lastSent < 5000) return;
+    if (now - lastSent < 10000) return;
     sessionStorage.setItem('ac_visitor_alert_sent', String(now));
+
+    // Calculate persistent visit count in localStorage
+    var visitCount = parseInt(localStorage.getItem('ac_visit_count') || '0', 10);
+    var lastVisitTime = parseInt(localStorage.getItem('ac_last_visit_time') || '0', 10);
+
+    // If new session or more than 30 seconds since last visit recorded:
+    if (!sessionStorage.getItem('ac_session_counted') || (now - lastVisitTime > 30000)) {
+      visitCount = visitCount + 1;
+      localStorage.setItem('ac_visit_count', String(visitCount));
+      localStorage.setItem('ac_last_visit_time', String(now));
+      sessionStorage.setItem('ac_session_counted', 'true');
+    } else if (visitCount === 0) {
+      visitCount = 1;
+      localStorage.setItem('ac_visit_count', '1');
+      localStorage.setItem('ac_last_visit_time', String(now));
+    }
 
     // Fetch Geo info with quick fallback
     var geo = null;
@@ -9287,18 +9732,26 @@ async function trackVisitorArrival() {
     const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     const locParts = [geo.city, geo.region, geo.country].filter(Boolean).join(', ') || 'Global';
 
-    const text = 
-      "👀 NEW VISITOR ON WEBSITE!\n\n" +
-      "🆔 Visitor ID: " + visitorId + "\n" +
-      "📍 Location: " + locParts + " " + (geo.flag || '🌐') + "\n" +
-      "🌐 IP: " + geo.ip + "\n" +
-      "📶 ISP: " + geo.isp + "\n" +
-      "📱 Device: " + device + "\n" +
-      "📄 Page: " + page + "\n" +
-      "⏰ Time: " + time + "\n\n" +
-      "💬 Is visitor se chat karne ke liye:\n" +
-      "Live Chat Bot par is tarah reply karein:\n" +
-      visitorId + " Aapka reply";
+    let text = "";
+    if (visitCount <= 1) {
+      // First visit — full detail
+      text =
+        "👀 NEW VISITOR ON WEBSITE! (1st Visit)\n\n" +
+        "🆔 Visitor ID: " + visitorId + "\n" +
+        "📍 Location: " + locParts + " " + (geo.flag || '🌐') + "\n" +
+        "🌐 IP: " + geo.ip + "\n" +
+        "📶 ISP: " + geo.isp + "\n" +
+        "📱 Device: " + device + "\n" +
+        "📄 Page: " + page + "\n" +
+        "⏰ Time: " + time + "\n\n" +
+        "💬 Is visitor se chat karne ke liye:\n" +
+        "Live Chat Bot par is tarah reply karein:\n" +
+        visitorId + " Aapka reply";
+    } else {
+      // Returning visit — sirf Visitor ID + visit number (clean & short)
+      text =
+        "🔄 Visitor " + visitorId + " wapas aaya — Visit #" + visitCount + " ⏰ " + time;
+    }
 
     // Send instant notification via dedicated Visitor Bot (@Algochiefvisitor_bot)
     await fetch("https://api.telegram.org/bot" + TELEGRAM_VISITOR_BOT_TOKEN + "/sendMessage", {
