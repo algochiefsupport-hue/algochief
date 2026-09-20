@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M8EDRX7BVG"></script>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M8EDRX7BVG"></script>
+
+
+
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -1020,6 +1030,18 @@ nav{
 .chart-footer-stats .cf-label{color:var(--muted);font-size:0.6rem;margin-top:2px;letter-spacing:0.03em}
 
 /* ALGO RADAR — abstract animated visual (no fake price data) */
+
+/* ALGO RADAR SWEEP ANIMATION */
+@keyframes algoRadarSweepSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.algo-radar-sweep-cone {
+  transform-origin: 150px 95px !important;
+  transform-box: view-box !important;
+  animation: algoRadarSweepSpin 3.5s linear infinite !important;
+}
+
 .algo-radar{width:100%;display:flex;align-items:center;justify-content:center;padding:0.6rem 0 0.2rem}
 .algo-radar svg{width:100%;max-width:320px;height:auto;display:block}
 .algo-feature-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-top:1rem}
@@ -2179,7 +2201,7 @@ a:not([href]), a[role="button"], [data-action-href] {
 <div id="page-home" class="page-view">
 
 <!-- STRATEGY NAME TICKER SLIDER -->
-<div style="background:var(--navy2);border-bottom:1px solid var(--border);padding:0.7rem 0;overflow:hidden;white-space:nowrap;position:relative;">
+<div id="strategy-ticker-bar" style="background:var(--navy2);border-bottom:1px solid var(--border);padding:0.7rem 0;overflow:hidden;white-space:nowrap;position:relative;">
   <!-- Left fade -->
   <div style="position:absolute;left:0;top:0;bottom:0;width:80px;background:linear-gradient(90deg,var(--navy2),transparent);z-index:2;pointer-events:none;"></div>
   <!-- Right fade -->
@@ -3722,7 +3744,7 @@ a:not([href]), a[role="button"], [data-action-href] {
 </div>
 
 <!-- HERO -->
-<div style="max-width:1200px;margin:0 auto;position:relative">
+<div class="home-flow-section" style="max-width:1200px;margin:0 auto;position:relative">
   <div class="hero-glow"></div>
   <div class="hero">
     <div class="hero-left">
@@ -3769,9 +3791,9 @@ a:not([href]), a[role="button"], [data-action-href] {
             <circle cx="150" cy="95" r="50" fill="none" stroke="rgba(30,143,255,0.14)" stroke-width="1"/>
 
             <!-- rotating scan sweep -->
-            <g>
+            <g class="algo-radar-sweep-cone" style="transform-origin:150px 95px;">
               <path d="M150,95 L150,17 A78,78 0 0 1 205,40 Z" fill="url(#sweepGrad)">
-                <animateTransform attributeName="transform" type="rotate" from="0 150 95" to="360 150 95" dur="4s" repeatCount="indefinite"/>
+                <animateTransform attributeName="transform" type="rotate" from="0 150 95" to="360 150 95" dur="3.5s" repeatCount="indefinite"/>
               </path>
             </g>
 
@@ -3821,7 +3843,7 @@ a:not([href]), a[role="button"], [data-action-href] {
 
 <div class="divider"></div>
 <!-- HOW AUTOMATION WORKS -->
-<div class="container" id="automation" style="padding-top:4rem;padding-bottom:3rem">
+<div class="container home-flow-section" id="automation" style="padding-top:4rem;padding-bottom:3rem">
   <span class="sec-tag" style="color:#00E5A0">Fully Hands-Free</span>
   <h2 class="sec-title">How Automation Works</h2>
   <p class="sec-sub">Every strategy is fully automatic once set up. You do not need to sit and watch the charts or place trades manually &mdash; the signal goes straight from TradingView to your broker.</p>
@@ -3926,16 +3948,9 @@ a:not([href]), a[role="button"], [data-action-href] {
   </div>
 </div>
 
-<!-- STATS -->
-<div class="stats-bar">
-  <div class="stat-item"><span class="stat-num">83%</span><div class="stat-label">Verified Win Rate</div></div>
-  <div class="stat-item"><span class="stat-num">4.2x</span><div class="stat-label">Avg Risk / Reward</div></div>
-  <div class="stat-item"><span class="stat-num">6+</span><div class="stat-label">Markets Covered</div></div>
-  <div class="stat-item"><span class="stat-num">Invite</span><div class="stat-label">Only Access</div></div>
-</div>
+
 <div class="divider"></div>
-<!-- STRATEGY -->
-<div class="container" id="strategy">
+<div class="container home-flow-section" id="strategy">
   <span class="sec-tag">The Strategy</span>
   <h2 class="sec-title">One System. Every Market.</h2>
   <div class="strat-wrap">
@@ -3976,9 +3991,11 @@ a:not([href]), a[role="button"], [data-action-href] {
     </div>
   </div>
 </div>
+
 <div class="divider"></div>
+
 <!-- APPLY -->
-<div class="apply-wrap" id="apply">
+<div class="apply-wrap home-flow-section" id="apply">
   <span class="sec-tag" style="display:block;margin-bottom:0.7rem">Limited Spots Available</span>
   <h2>Ready for <span style="background:linear-gradient(90deg,var(--blue-bright),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Invite Access?</span></h2>
   <p>Click below to complete your payment and get instant access to NovaPulse™ invite-only indicator on TradingView.</p>
@@ -3991,23 +4008,24 @@ a:not([href]), a[role="button"], [data-action-href] {
 </div>
 <div class="divider"></div>
 <!-- FOOTER -->
-<footer>
+<footer class="home-flow-section">
   <div class="footer-logo">AlgoChief</div>
   <p>© 2025 AlgoChief. All rights reserved. Trading involves significant risk of loss.</p>
   <p style="margin-top:0.5rem">✈️ Telegram: <a data-ext-href="https://t.me/Algochiefsupport" target="_blank" style="color:#00D4FF;text-decoration:none;font-weight:700" onclick="window.open('https://t.me/Algochiefsupport', '_blank', 'noopener,noreferrer');return false;" role="button" tabindex="0">@Algochiefsupport</a> &nbsp;|&nbsp; 📧 Email: <a data-ext-href="mailto:algochiefsupport@gmail.com" style="color:#00E5A0;text-decoration:none" onclick="window.location.href='mailto:algochiefsupport@gmail.com';return false;" role="button" tabindex="0">algochiefsupport@gmail.com</a></p>
   <div class="footer-links" style="margin-top:0.8rem">
-    <a data-ext-href="https://www.tradingview.com" target="_blank" rel="noopener" onclick="window.open('https://www.tradingview.com', '_blank', 'noopener,noreferrer');return false;" role="button" tabindex="0">TradingView</a>
+    <a data-ext-href="https://www.tradingview.com/u/AlgoChief" target="_blank" rel="noopener" onclick="window.open('https://www.tradingview.com/u/AlgoChief', '_blank', 'noopener,noreferrer');return false;" role="button" tabindex="0">TradingView</a>
     <a data-ext-href="https://t.me/Algochiefsupport" target="_blank" rel="noopener" onclick="window.open('https://t.me/Algochiefsupport', '_blank', 'noopener,noreferrer');return false;" role="button" tabindex="0">Telegram</a>
-    <a data-ext-href="https://t.me/Algochiefsupport" target="_blank" rel="noopener" onclick="window.open('https://t.me/Algochiefsupport', '_blank', 'noopener,noreferrer');return false;" role="button" tabindex="0">Discord</a>
-    <a data-action-data-ext-href="#terms" tabindex="0" role="button"  onclick="window.open('#terms', '_blank', 'noopener,noreferrer');return false;">Disclaimer</a>
+    <a data-action-data-ext-href="#terms" tabindex="0" role="button"  onclick="goToPolicy('terms');return false;">Disclaimer</a>
   </div>
   <div class="footer-links" style="margin-top:0.8rem;flex-wrap:wrap;justify-content:center;gap:1.2rem">
-    <a data-action-data-ext-href="#terms" tabindex="0" role="button"  onclick="window.open('#terms', '_blank', 'noopener,noreferrer');return false;">Terms & Conditions</a>
-    <a data-action-data-ext-href="#privacy" tabindex="0" role="button"  onclick="window.open('#privacy', '_blank', 'noopener,noreferrer');return false;">Privacy Policy</a>
-    <a data-action-data-ext-href="#refund" tabindex="0" role="button"  onclick="window.open('#refund', '_blank', 'noopener,noreferrer');return false;">Refund Policy</a>
-    <a data-action-data-ext-href="#cancellation" tabindex="0" role="button"  onclick="window.open('#cancellation', '_blank', 'noopener,noreferrer');return false;">Cancellation Policy</a>
+    <a data-action-data-ext-href="#terms" tabindex="0" role="button" onclick="goToPolicy('terms');return false;">Terms &amp; Conditions</a>
+    <a data-action-data-ext-href="#privacy" tabindex="0" role="button" onclick="goToPolicy('privacy');return false;">Privacy Policy</a>
+    <a data-action-data-ext-href="#refund" tabindex="0" role="button" onclick="goToPolicy('refund');return false;">Refund Policy</a>
+    <a data-action-data-ext-href="#cancellation" tabindex="0" role="button" onclick="goToPolicy('cancellation');return false;">Cancellation Policy</a>
   </div>
 </footer>
+
+
 <!-- POLICY SECTIONS -->
 <style>
 .policy-section{background:#05081A;border-top:1px solid rgba(255,255,255,0.07);padding:4rem 2rem}
@@ -4119,6 +4137,8 @@ a:not([href]), a[role="button"], [data-action-href] {
     <a data-action-data-ext-href="#" tabindex="0" role="button"  class="policy-back" onclick="window.scrollTo({top:0,behavior:'instant'});return false">↑ Back to Top</a>
   </div>
 </section>
+
+
 </div>
 <div id="page-backtest" class="page-view" style="display:none">
 <div class="container" id="results" style="padding-top:4.5rem;padding-bottom:0">
@@ -8362,7 +8382,7 @@ a:has(.result-card-photo) {
 </div>
 
 <!-- Backtest Accuracy & Parameter Replication Note -->
-<div class="container" style="padding-top:2.5rem;padding-bottom:1.5rem">
+<div class="container list-only" style="padding-top:2.5rem;padding-bottom:1.5rem">
   <div style="background:rgba(0,229,160,0.05);border:1px solid rgba(0,229,160,0.25);border-left:4px solid #00E5A0;border-radius:14px;padding:1.4rem 1.8rem">
     <div style="display:flex;align-items:flex-start;gap:14px">
       <span style="font-size:1.4rem;flex-shrink:0;line-height:1">⚠️</span>
@@ -8379,7 +8399,7 @@ a:has(.result-card-photo) {
 </div>
 
 <!-- BACKTEST STRATEGY WALKTHROUGH VIDEO TUTORIAL -->
-<div class="container" style="padding-top:0.5rem;padding-bottom:3.5rem">
+<div class="container list-only" id="backtest-video-tutorial-section" style="padding-top:0.5rem;padding-bottom:3.5rem">
   <div class="video-tutorial-card" style="border-color: rgba(0,229,160,0.32);">
     <div class="video-header-row">
       <div>
@@ -8896,7 +8916,10 @@ function goToBacktest(anchorId){
     if(t){ t.scrollIntoView({behavior:'instant'}); }
   }, 60);
 }
+function showPolicyTab(tabId){ /* No-op: policies now in page-home scroll */ }
+
 function goToPolicy(anchorId){
+  anchorId = anchorId || 'terms';
   showPage('page-home');
   setTimeout(function(){
     var t = document.getElementById(anchorId);
@@ -9145,10 +9168,12 @@ function validateTrialForm(){
 
 /* ══════════ ALGOCHIEF TELEGRAM VISITOR TRACKING & TRIAL ALERTS ══════════ */
 // Dedicated Telegram Bots for Live Chat & Free 2-Day Trial
-const TELEGRAM_CHAT_BOT_TOKEN  = "8720192189:AAH_3ZA0moJsTQM2gJHnBlJEALvEd4W_zYE"; // Exclusively Live Chat (@Algochief_bot)
-const TELEGRAM_TRIAL_BOT_TOKEN = "7719822763:AAF7u99jQ-yHeXzxvl0IpPZLyhlGeu0-s5Y"; // Exclusively Free Trial Leads (@Algochieftrial_bot)
-const TELEGRAM_BOT_TOKEN       = TELEGRAM_CHAT_BOT_TOKEN;
-const TELEGRAM_CHAT_ID         = "7985019363";
+const TELEGRAM_CHAT_BOT_TOKEN    = "8720192189:AAH_3ZA0moJsTQM2gJHnBlJEALvEd4W_zYE"; // Exclusively Live Chat (@Algochief_bot)
+const TELEGRAM_TRIAL_BOT_TOKEN  = "7719822763:AAF7u99jQ-yHeXzxvl0IpPZLyhlGeu0-s5Y"; // Exclusively Free Trial Leads (@Algochieftrial_bot)
+const TELEGRAM_VISITOR_BOT_TOKEN = "8693830878:AAGXGwrf0q0HXJCCTgkHZbHyVh22iER3628"; // Exclusively Visitor Tracking (@Algochiefvisitor_bot)
+const TELEGRAM_BOT_TOKEN         = TELEGRAM_CHAT_BOT_TOKEN;
+const TELEGRAM_CHAT_ID           = "7985019363";
+const TELEGRAM_VISITOR_CHAT_ID   = "7985019363"; // Owner chat ID for visitor notifications
 
 var visitorGeoCache = null;
 
@@ -9192,40 +9217,101 @@ function getDeviceType() {
 }
 
 // Track new visitor on site load (session-throttled to avoid spam)
+// Helper: Hash IP to 4-digit visitor ID (#1000 - #9999), exactly matching Live Chat
+function hashIpToVisitorId(ip) {
+  if (!ip || ip === 'Unknown') return null;
+  var hash = 0;
+  for (var i = 0; i < ip.length; i++) {
+    hash = ((hash << 5) - hash) + ip.charCodeAt(i);
+    hash |= 0;
+  }
+  var num = (Math.abs(hash) % 9000) + 1000;
+  return '#' + num;
+}
+
+// Helper: Get or create Visitor ID (shared between Visitor Bot and Live Chat)
+function getOrCreateVisitorId() {
+  if (visitorGeoCache && visitorGeoCache.ip && visitorGeoCache.ip !== 'Unknown') {
+    var ipId = hashIpToVisitorId(visitorGeoCache.ip);
+    if (ipId) {
+      localStorage.setItem('ac_visitor_id', ipId);
+      return ipId;
+    }
+  }
+  var id = localStorage.getItem('ac_visitor_id');
+  if (id) {
+    return id;
+  }
+  // Generate stable #xxxx fallback
+  var randNum = Math.floor(1000 + Math.random() * 9000);
+  var fallbackId = '#' + randNum;
+  localStorage.setItem('ac_visitor_id', fallbackId);
+  return fallbackId;
+}
+
+// Function to track visitor arrival and send live Telegram notification
 async function trackVisitorArrival() {
   try {
-    if (sessionStorage.getItem('ac_visited')) return;
-    sessionStorage.setItem('ac_visited', 'true');
+    // 5-second session debounce to prevent duplicate spam on rapid reload
+    var now = Date.now();
+    var lastSent = parseInt(sessionStorage.getItem('ac_visitor_alert_sent') || '0', 10);
+    if (now - lastSent < 5000) return;
+    sessionStorage.setItem('ac_visitor_alert_sent', String(now));
 
-    const geo = await getVisitorGeo();
+    // Fetch Geo info with quick fallback
+    var geo = null;
+    try {
+      geo = await getVisitorGeo();
+    } catch(ge){
+      geo = { ip: 'Direct', country: 'Online', flag: '🌐', region: '', city: '', isp: 'Unknown' };
+    }
+    if (!geo) {
+      geo = { ip: 'Direct', country: 'Online', flag: '🌐', region: '', city: '', isp: 'Unknown' };
+    }
+
+    // Exactly same visitor ID format as Live Chat (#xxxx)
+    var visitorId = (geo.ip && geo.ip !== 'Unknown' && geo.ip !== 'Direct') ? hashIpToVisitorId(geo.ip) : null;
+    if (!visitorId) {
+      visitorId = getOrCreateVisitorId();
+    }
+    localStorage.setItem('ac_visitor_id', visitorId);
+
+    // Update Live Chat header badge if open
+    var hBadge = document.getElementById('algochatHeaderId');
+    if (hBadge) hBadge.textContent = visitorId;
+    var fBadge = document.getElementById('algochatFooterId');
+    if (fBadge) fBadge.textContent = visitorId;
+
     const device = getDeviceType();
     const page = window.location.hash || '#page-home';
     const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    const locParts = [geo.city, geo.region, geo.country].filter(Boolean).join(', ');
+    const locParts = [geo.city, geo.region, geo.country].filter(Boolean).join(', ') || 'Global';
 
     const text = 
       "👀 NEW VISITOR ON WEBSITE!\n\n" +
-      "📍 Location: " + locParts + " " + geo.flag + "\n" +
+      "🆔 Visitor ID: " + visitorId + "\n" +
+      "📍 Location: " + locParts + " " + (geo.flag || '🌐') + "\n" +
       "🌐 IP: " + geo.ip + "\n" +
       "📶 ISP: " + geo.isp + "\n" +
       "📱 Device: " + device + "\n" +
       "📄 Page: " + page + "\n" +
-      "⏰ Time: " + time;
+      "⏰ Time: " + time + "\n\n" +
+      "💬 Is visitor se chat karne ke liye:\n" +
+      "Live Chat Bot par is tarah reply karein:\n" +
+      visitorId + " Aapka reply";
 
-    // Visitor arrival is reserved for Google Analytics to keep Telegram exclusively for Live Chat
-    // (Uncomment below only if you want every pageview notification in Telegram)
-    /*
-    await fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
+    // Send instant notification via dedicated Visitor Bot (@Algochiefvisitor_bot)
+    await fetch("https://api.telegram.org/bot" + TELEGRAM_VISITOR_BOT_TOKEN + "/sendMessage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
+      body: JSON.stringify({ chat_id: TELEGRAM_VISITOR_CHAT_ID, text: text })
     });
-    */
   } catch (err) {
     console.log("Visitor tracking error:", err);
   }
 }
 
+// Trigger visitor tracking on load
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', trackVisitorArrival);
 } else {
@@ -9503,6 +9589,26 @@ function showStrategySetups(stratKey){
   if(grid) grid.style.display = 'none';
   if(view) view.style.display = 'block';
 
+  // Hide the rest of the homepage flow sections (hero, automation, strategy, apply, footer)
+  document.querySelectorAll('.home-flow-section').forEach(function(el){
+    el.style.display = 'none';
+  });
+  // Hide policy sections
+  document.querySelectorAll('.policy-section').forEach(function(el){
+    el.style.display = 'none';
+  });
+  // Hide footer (paatti) completely so nothing shows under strategy cards
+  document.querySelectorAll('footer').forEach(function(el){
+    el.style.display = 'none';
+  });
+  document.querySelectorAll('#page-home .divider').forEach(function(el){
+    el.style.display = 'none';
+  });
+  var tickerBar = document.getElementById('strategy-ticker-bar');
+  if (tickerBar) tickerBar.style.display = 'none';
+  var polStyle = document.getElementById('policy-css-block');
+  if (polStyle) polStyle.style.display = 'none';
+
   document.querySelectorAll('.strategy-subgrid').forEach(function(el){ el.style.display = 'none'; });
   var targetGrid = document.getElementById('strat-setups-grid-' + stratKey);
   if(targetGrid) targetGrid.style.display = 'grid';
@@ -9513,12 +9619,12 @@ function showStrategySetups(stratKey){
 
   var info = STRATEGY_TITLES[stratKey];
   if(info){
-    var titleEl = document.getElementById('strat-view-title');
-    var subEl = document.getElementById('strat-view-sub');
-    var countEl = document.getElementById('strat-view-count');
-    if(titleEl) titleEl.innerHTML = info.title;
-    if(subEl) subEl.innerHTML = info.sub;
-    if(countEl) countEl.innerHTML = info.count;
+    var titleEl = document.getElementById('strategy-setups-title');
+    var tagEl = document.getElementById('strategy-setups-tag');
+    var descEl = document.getElementById('strategy-setups-desc');
+    if(titleEl) titleEl.textContent = info.title;
+    if(tagEl) tagEl.textContent = info.tag;
+    if(descEl) descEl.textContent = info.desc;
   }
 
   var header = document.getElementById('strategies-list');
@@ -9530,6 +9636,25 @@ function hideStrategySetups(){
   var view = document.getElementById('strategy-setups-view');
   if(grid) grid.style.display = 'grid';
   if(view) view.style.display = 'none';
+
+  // Restore homepage flow sections (hero, automation, strategy, apply, footer)
+  document.querySelectorAll('.home-flow-section').forEach(function(el){
+    el.style.display = '';
+  });
+  // Restore policy sections
+  document.querySelectorAll('.policy-section').forEach(function(el){
+    el.style.display = '';
+  });
+  // Restore footer (paatti) at bottom of main homepage
+  document.querySelectorAll('footer').forEach(function(el){
+    el.style.display = '';
+  });
+  document.querySelectorAll('#page-home .divider').forEach(function(el){
+    el.style.display = '';
+  });
+  var tickerBar = document.getElementById('strategy-ticker-bar');
+  if (tickerBar) tickerBar.style.display = '';
+
   var header = document.getElementById('strategies-list');
   if(header){ header.scrollIntoView({behavior: 'smooth'}); }
 }
@@ -10319,4 +10444,8 @@ document.addEventListener('mouseover', function(e) {
 </body>
 
 </html>
+
+
+
+
 
